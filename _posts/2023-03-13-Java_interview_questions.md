@@ -1,7 +1,7 @@
 ---
 layout: mypost
-title: Java面试题
-categories: [面试题, Java]
+title: Java interview questions
+categories: [interview, Java]
 ---
 
 # 面试题整理

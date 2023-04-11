@@ -1,10 +1,10 @@
 ---
 layout: mypost
-title: 关于我
+title: about me
 ---
 
-> 随便写写
+> Write aimlessly
 
-## 联系我
+## Contact me
 
 - Email: [terencelpdetar9624@gmail.com](mailto:terencelpdetar9624@gmail.com)

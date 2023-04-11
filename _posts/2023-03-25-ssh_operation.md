@@ -1,6 +1,6 @@
 ---
 layout: mypost
-title: ssh操作
+title: ssh operation
 categories: [ssh, linux, shell]
 ---
 
@@ -48,10 +48,10 @@ ssh -L 123:localhost:456 remotehost
 ssh -R 123:farawayhost:456 remotehost
 ```
 
-![image-20200910003745835](https://gitee.com/mjerzy/images/raw/master/img/image-20200910003745835.png)
+![01](01.png)
 
-![image-20200910003657656](https://gitee.com/mjerzy/images/raw/master/img/image-20200910003657656.png)
+![02](02.png)
 
-![image-20200910004757411](https://gitee.com/mjerzy/images/raw/master/img/image-20200910004757411.png)
+![03](03.png)
 
-![image-20200910010058463](https://gitee.com/mjerzy/images/raw/master/img/image-20200910010058463.png)
+![04](04.png)

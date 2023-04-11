@@ -2,7 +2,7 @@ encoding: utf-8
 
 # SEO相关信息
 title: Colin Blog
-description: Colin的个人博客
+description: Colin personal blog
 keywords: Colin,Blog,Java,Html,JavaScript
 author: Colin
 footerText: ''
@@ -27,13 +27,13 @@ tucaoUrl:
 # 必填字段 title: '文本' url: '链接'
 # 可选字段 target: '_blank' 新页面打开 
 menu:
-  - title: 首页
+  - title: homepage
     url: /
-  - title: 归类
+  - title: categories
     url: /pages/categories.html
-  - title: 搜索
+  - title: search
     url: /pages/search.html
-  - title: 关于
+  - title: about
     url: /pages/about.html
 
 # 点击页面文字冒出特效,不需要请设置为false
