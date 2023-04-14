@@ -4,47 +4,47 @@ title: ssh operation
 categories: [ssh, linux, shell]
 ---
 
-# SSH远程相关操作
+# SSH remote related operation
 
-### ssh连接
+### ssh connect
 
 ```shell
 ssh -p 22 chen@172.0.0.1
 
-#登陆时发送私钥，保存登陆信息
+#Send the private key when logging in and save the login information
 ssh-copy-id -p port username@ip
 
-#服务器文件配置ubuntu
+#Ubuntu server file configuration
 vi /etc/ssh/sshd_config 
-#ssh重启（更改配置文件后）
+#ssh restart: after changing the configuration file
 service sshd reload
 
-# 通过curl查询ssh端口技巧
+# Skills of querying ssh ports through curl
 curl ip:22
-#如果该服务器默认ssh端口为22，则返回信息
+# If the default ssh port of the server is 22, the information is returned.
 SSH-2.0-OpenSSH_7.6p1 Ubuntu-4
 curl: (56) Recv failure: Connection reset by peer
-#返回
+# Return
 Connection refused
-#代表该端口没有运行中的程序
+# Indicates that the port does not have a running program
 ```
 
-### 传送文件
+### Upload file
 
 ```shell
-scp -P 22 文件名 user@172.0.0.1:/root/1.txt   #传送文件
-scp -r 文件夹 user@172.0.0.1:/root/    #传送文件夹
+scp -P 22 filename user@172.0.0.1:/root/1.txt
+scp -r foldername user@172.0.0.1:/root/
 ```
 
-### 端口转发
+### Port forwarding
 
 ```shell
-# 图1 正向转发
+# Figure 1 Forward forwarding
 ssh -L 123:localhost:456 remotehost
-# 123 -> 本地端口
-# 图2 正向转发通过服务器访问它能访问的另外一台服务器
+# 123 -> local port
+# Figure 2 Forward forwarding accesses another server that it can access through the server.
 
-# 图3 反向转发 远程用户可通过本机端口访问本机的内网
+# Figure 3 Reverse forwarding allows remote users to access the local intranet through the local port
 ssh -R 123:farawayhost:456 remotehost
 ```
 

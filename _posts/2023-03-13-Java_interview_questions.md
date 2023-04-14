@@ -14,7 +14,7 @@ categories: [interview, Java]
 
    * Single Sign On
    * 理解：一次登录，多处访问（在一个具有多个子系统的系统中，只用登录一个子系统，然后访问其他子系统时不需要再次登录）
-   * 流程（基于cookie）：
+   * 流程（Based on Cookie）：
      * 用户首次访问A系统，A系统发现用户未登录，则重定向到SSO认证中心并携带请求url，进行登录验证
      * 用户在SSO认证中心进行用户名和密码验证登录，登录成功后，服务器生成一个ticket，然后重定向到系统A的源url并将该ticket追加到url参数
      * 系统A获取到url参数中的ticket，向SSO发起ticket较验，较验成功，则系统A放行，并将ticket存入到cookie
