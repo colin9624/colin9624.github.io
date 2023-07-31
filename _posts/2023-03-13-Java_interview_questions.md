@@ -4,86 +4,83 @@ title: Java interview questions
 categories: [interview, Java]
 ---
 
-# 面试题整理
+# Collation of interview questions
 
-## 累计点
+## Accumulation point
 
-1. 介绍一下你在项目中所做的模块。
+1. Introduce the modules you are responsible for in the project.
 
-2. 单点登录的原理，你们jwt中包含哪些信息？
-
+2. The principle of Single Sign On, what information does your jwt contain?？
    * Single Sign On
-   * 理解：一次登录，多处访问（在一个具有多个子系统的系统中，只用登录一个子系统，然后访问其他子系统时不需要再次登录）
-   * 流程（Based on Cookie）：
-     * 用户首次访问A系统，A系统发现用户未登录，则重定向到SSO认证中心并携带请求url，进行登录验证
-     * 用户在SSO认证中心进行用户名和密码验证登录，登录成功后，服务器生成一个ticket，然后重定向到系统A的源url并将该ticket追加到url参数
-     * 系统A获取到url参数中的ticket，向SSO发起ticket较验，较验成功，则系统A放行，并将ticket存入到cookie
-     * 用户访问B系统，此时B系统domain下已经携带ticket，直接向SSO发起ticket较验，较验成功，则放行，并将ticket存入cookie(更新ticket过期时间)
-     * 用户登出时，移除domain下的cookie![01](01.png)
-   * jwt：用户名、用户id、过期时间
+   * Understand: Single login, multiple visits（In a system with multiple subsystems, you only need to log in to one subsystem, and then you do not need to log in again when you access other subsystems）
+   * Process flow (Based on Cookie):
+     * If the user visits system A for the first time, and system A discovers that the user is not logged in, it will be redirected to the SSO authentication center and carry the request url for login verification
+     * The user verifies the user name and password at the SSO authentication center. After the login is successful, the server generates a `ticket`, then redirects to the source url of system A and appends the `ticket` to the url parameter.
+     * System A gets the ticket in the url parameter and initiates ticket verification to SSO. If the verification is successful, system A releases it and stores the `ticket` in cookie.
+     * When the user accesses system B, the `ticket` is already carried under the domain of system B, and `ticket` verification is initiated directly to SSO. If the verification is successful, the `ticket` is released and stored in cookie (update the expiration time of `ticket`)
+     * Remove the cookie under domain when the user logs out ![01](01.png)
+   * jwt：username, userid, expiration time.
 
-3. 引入第三方登录时，怎么使得你自己的token和第三方的token关联起来？
-
-   * 步骤
-     * A 网站让用户跳转到 GitHub
-     * GitHub 要求用户登录，然后询问"A 网站要求获得 xx 权限，你是否同意？"
-     * 用户同意，GitHub 就会重定向回 A 网站，同时发回一个授权码
-     * A 网站使用授权码，向 GitHub 请求令牌
-     * GitHub 返回令牌
-     * A 网站使用令牌，向 GitHub 请求用户数据
+3. When introducing a third-party login, how do you associate your own token with a third-party token?
+   * Steps
+     * Website A allows users to jump to GitHub
+     * GitHub asks the user to log in, and then asks, "do you agree that website A asks for xx permission?"
+     * If the user agrees, GitHub will redirect back to website A and send back an authorization code.
+     * Website A uses authorization codes to request tokens from GitHub
+     * GitHub returns token
+     * Website A uses tokens to request user data from GitHub
 
 4. Feign客户端的远程调用是怎么实现的?协议是什么？Hystrics熔断保护的实现原理？
 
-5. Redis的有哪些模式？
+5. What are the modes of Redis?
 
-   * 单机模式
+   * Stand-alone mode
 
-     * 优点：
-       * 部署简单，0成本
-       * 成本低，没有备用节点，不需要其他开支
-       * 高性能，单机不需要同步数据，数据天然一致性
-     * 缺点：
-       * 可靠性保证不是很好，单节点有宕机的风险
-       * 单机高性能受限于CPU的处理能力，redis是单线程的
+     * pros:
+       * Simple deployment, 0 cost
+       * Low cost, no backup nodes, no other expenses
+       * High performance, single machine does not need to synchronize data, natural data consistency
+     * cons:
+       * The reliability guarantee is not very good, and a single node has the risk of downtime.
+       * The high performance of single machine is limited by the processing power of CPU, and redis is single-threaded.
 
-   * 主从模式
+   * Master-slave mode
+     * Master-slave replication refers to copying the data from one Redis server to another Redis server.
+       The former is called master node (master) and the latter is called slave node (slave); data replication is one-way and can only be from master node to slave node.
 
-     * 主从复制，是指将一台Redis服务器的数据，复制到其他的Redis服务器。
+     * Advantages:
+       * Once the master node goes down, the backup of the slave node as the master node can replace its work at any time.
+       * Expand the reading ability of the master node, share the reading pressure of the master node, and support the separation of reading and writing.
+       * High availability cornerstone: in addition to the above functions, master-slave replication is also the basis on which Sentinel mode and cluster mode can be implemented, so master-slave replication is the cornerstone of Redis high availability.
+       * Slave can also accept connection and synchronization requests from other Slaves, which can effectively offload the synchronization pressure of Master.
+       * Master Server provides services to Slaves in a non-blocking manner. So during Master-Slave synchronization, the client can still submit queries or modify requests
+       * Slave Server also completes data synchronization in a non-blocking manner. During synchronization, if a client submits a query request, Redis returns the data before synchronization
 
-       前者称为主节点(master)，后者称为从节点(slave)；数据的复制是单向的，只能由主节点到从节点。
+     * Disadvantages:
 
-     * 优点：
+       * Once the master node goes down, the slave node is promoted to the master node, and the address of the master node of the application side needs to be modified, and all slave nodes need to be ordered to copy the new master node. The whole process requires human intervention.
+       * The writing ability of the master node is limited by a single machine.
+       * The storage capacity of the master node is limited by a single machine.
+       * If multiple Slave are disconnected, when you need to restart, try not to restart at the same time. Because as long as Slave starts, a sync request will be sent to fully synchronize with the host, and when multiple Slave restarts, it may cause a sharp increase in Master IO and lead to downtime
 
-       * 一旦主节点宕机，从节点作为主节点的备份可以随时顶上来
-       * 扩展主节点的读能力，分担主节点读压力，支持进行读写分离
-       * 高可用基石：除了上述作用以外，主从复制还是哨兵模式和集群模式能够实施的基础，因此说主从复制是Redis高可用的基石
-       * Slave 同样可以接受其它 Slaves 的连接和同步请求，这样可以有效的分载 Master 的同步压力
-       * Master Server 是以非阻塞的方式为 Slaves 提供服务。所以在 Master-Slave 同步期间，客户端仍然可以提交查询或修改请求
-       * Slave Server 同样是以非阻塞的方式完成数据同步。在同步期间，如果有客户端提交查询请求，Redis则返回同步之前的数据
+   * Sentinel mode
 
-     * 缺点：
+     * How it works: each Sentinel sends a PING command to all of its **master servers**, **slave servers** and other sentinel **instances** at a frequency of once per second.
+       If an **instance** takes longer than the value specified by down-after-milliseconds from the last valid reply to the PING command, the instance will be marked as **subjective offline** by Sentinel.
 
-       * 一旦主节点宕机，从节点晋升为主节点，同时需要修改应用方的主节点地址，还需要命令所有从节点去复制新的主节点，整个过程需要人工干预
-       * 主节点的写能力受到单机的限制
-       * 主节点的存储能力受到单机的限制
-       * 如果多个 Slave 断线了，需要重启的时候，尽量不要在同一时间段进行重启。因为只要 Slave 启动，就会发送sync 请求和主机全量同步，当多个 Slave 重启的时候，可能会导致 Master IO 剧增从而宕机
+       If a **master server** is marked as **subjective offline**, then all **Sentinel** nodes of the master server are being monitored to confirm whether the master server has indeed entered the **subjective offline** state at the frequency of **once per second**.
 
-   * 哨兵
+       If a master server is marked as subjectively offline and a sufficient number of Sentinel (at least up to the number specified in the configuration file) agrees with this judgment within the specified **time range**, then the master server is marked as **objective offline**.
 
-     * 原理：每个Sentinel以 每秒钟 一次的频率，向它**所有**的 **主服务器**、**从服务器** 以及其他Sentinel**实例** 发送一个PING 命令。
-       如果一个 实例（instance）距离最后一次有效回复 PING命令的时间超过 down-after-milliseconds 所指定的值，那么这个实例会被 Sentinel标记为 **主观下线**。
+       In general, each Sentinel sends INFO commands to all master and slave servers it knows about at a frequency of once every 10 seconds.
 
-       如果一个 **主服务器** 被标记为 **主观下线**，那么正在 监视 这个 主服务器 的**所有** Sentinel 节点，要以 **每秒一次** 的频率确认 该主服务器是否的确进入了 **主观下线** 状态。
-
-       如果一个 主服务器 被标记为 主观下线，并且有 **足够数量** 的 Sentinel（至少要达到配置文件指定的数量）在指定的 **时间范围** 内同意这一判断，那么这个该主服务器被标记为 **客观下线**。
-
-       在一般情况下， 每个 Sentinel 会以每 10秒一次的频率，向它已知的所有 主服务器 和 从服务器 发送 INFO 命令。
-
-       当一个 **主服务器** 被 Sentinel标记为 **客观下线** 时，Sentinel 向 下线主服务器 的所有 从服务器 发送 INFO 命令的频率，会从10秒一次改为 每秒一次。
+       When a **master server** is marked by Sentinel as **objective offline**, the frequency of Sentinel sending INFO commands to all slave servers of the offline master server will be changed from once per second to once per second.
 
        Sentinel和其他 Sentinel 协商 **主节点** 的状态，如果 主节点处于 **SDOWN`\**状态，则投票\**自动选出**新的主节点。将剩余的 **从节点** 指向 **新的主节点** 进行 **数据复制**。
 
-       当没有足够数量的 Sentinel 同意 主服务器 下线时， 主服务器 的 **客观下线状态** 就会被移除。当 **主服务器** 重新向 Sentinel的PING命令返回 有效回复 时，主服务器 的 **主观下线状态** 就会被移除。
+       当没有足够数量的 Sentinel 同意 主服务器 下线时， 主服务器 的 **客观下线状态** 就会被移除。
+
+       当 **主服务器** 重新向 Sentinel的PING命令返回 有效回复 时，主服务器 的 **主观下线状态** 就会被移除。
 
        ![02](02.jpg)
 
@@ -104,7 +101,7 @@ categories: [interview, Java]
 
        * Redis较难支持在线扩容，对于集群，容量达到上限时在线扩容会变得很复杂
 
-   * 集群
+   * Cluster mode
 
      * Redis Cluster 集群模式具有 **高可用**、**可扩展性**、**分布式**、**容错** 等特性
      * 原理：通过数据分片的方式来进行数据共享问题，同时提供数据复制和故障转移功能。之前的两种模式数据都是在一个节点上的，单个节点存储是存在上限的。集群模式就是把数据进行分片存储，当一个分片数据达到上限的时候，就分成多个分片
